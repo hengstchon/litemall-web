@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#app {
+  --primary: #ee0a24;
+  --bg: #f7f8fa;
+  @apply antialiased;
+  background-color: #f7f8fa;
+  color: #323233;
+}
+
+@layer components {
+  .my-mb {
+    margin-bottom: 50px;
+  }
+  .my-pt {
+    padding-top: 54px;
+  }
+  .my-pb {
+    padding-bottom: 50px;
+  }
+  .my-main {
+    @apply overscroll-contain;
+    height: calc(100vh - 54px - 50px);
+  }
+}
