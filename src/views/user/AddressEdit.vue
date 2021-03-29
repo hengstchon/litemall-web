@@ -8,6 +8,15 @@
 
     <div class="p-3">
       <div>
+        <van-field name="delivery" label="送货方式" required>
+          <template #input>
+            <van-radio-group v-model="delivery" direction="horizontal">
+              <van-radio name="1">配送</van-radio>
+              <van-radio name="2">邮寄</van-radio>
+            </van-radio-group>
+          </template>
+        </van-field>
+
         <van-field
           v-model="info.name"
           label="姓名"
@@ -26,6 +35,7 @@
         />
 
         <van-field
+          v-if="delivery === '1'"
           v-model="info.city"
           clearable
           required
@@ -34,6 +44,14 @@
           label="城市"
           placeholder="选择城市"
           @click="() => (showCity = !showCity)"
+        />
+        <van-field
+          v-else
+          v-model="info.city"
+          clearable
+          required
+          label="城市"
+          placeholder="城市名称"
         />
 
         <van-field
@@ -107,7 +125,7 @@
 </template>
 
 <script>
-import { Field, Switch, ActionSheet } from "vant";
+import { Field, Switch, ActionSheet, Radio, RadioGroup } from "vant";
 
 import { addressSave, addressDetail } from "@/api/address";
 import { tdist } from "@/utils/utils";
@@ -116,12 +134,15 @@ import { addressDelete } from "../../api/address";
 export default {
   components: {
     [Field.name]: Field,
+    [Radio.name]: Radio,
+    [RadioGroup.name]: RadioGroup,
     [Switch.name]: Switch,
     [ActionSheet.name]: ActionSheet
   },
 
   data() {
     return {
+      delivery: "1",
       type: "add",
       info: {
         id: 0,
@@ -178,6 +199,15 @@ export default {
           street,
           tel
         };
+        if (
+          this.cityList.includes(
+            this.info.city.replace(/^(.)|\s+(.)/g, c => c.toUpperCase())
+          )
+        ) {
+          this.delivery = "1";
+        } else {
+          this.delivery = "2";
+        }
       }
     },
     onSelect(action) {
@@ -185,6 +215,11 @@ export default {
       this.info.city = action.name;
     },
     async onSave() {
+      if (this.delivery === "1") {
+        this.info.addressExtra = "【配送】" + this.info.addressExtra;
+      } else {
+        this.info.addressExtra = "【邮寄】" + this.info.addressExtra;
+      }
       const params = { ...this.info };
       // delete params.id;
       try {
