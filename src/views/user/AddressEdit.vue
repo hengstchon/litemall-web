@@ -35,7 +35,7 @@
         />
 
         <van-field
-          v-if="delivery === '1'"
+          v-if="delivery === '1' && showOtherCity === false"
           v-model="info.city"
           clearable
           required
@@ -46,12 +46,20 @@
           @click="() => (showCity = !showCity)"
         />
         <van-field
-          v-else
+          v-if="delivery === '2'"
           v-model="info.city"
           clearable
           required
           label="城市"
-          placeholder="城市名称"
+          placeholder="如: Erlangen"
+        />
+        <van-field
+          v-if="showOtherCity"
+          v-model="info.city"
+          clearable
+          required
+          label="其他城市"
+          placeholder="填写城市名"
         />
 
         <van-field
@@ -60,7 +68,7 @@
           required
           type="digit"
           label="邮编"
-          placeholder="邮政编码"
+          placeholder="如: 91052"
         />
 
         <van-field
@@ -68,22 +76,14 @@
           clearable
           required
           label="街道"
-          placeholder="街道名称"
-        />
-
-        <van-field
-          v-model="info.strNr"
-          clearable
-          required
-          label="街道号"
-          placeholder="街道号码"
+          placeholder="如: Hauptstr. 10"
         />
 
         <van-field
           v-model="info.addressExtra"
           clearable
           label="备注"
-          placeholder="其他信息如房间号等"
+          placeholder="如: App. 5 等"
         />
       </div>
 
@@ -151,12 +151,19 @@ export default {
         city: "",
         postalCode: "",
         street: "",
-        strNr: "",
         addressExtra: "",
         isDefault: false
       },
       showCity: false,
-      cityList: ["Erlangen", "Nürnberg", "Bamberg", "Würzburg", "Regensburg"]
+      showOtherCity: false,
+      cityList: [
+        "Erlangen",
+        "Nürnberg",
+        "Bamberg",
+        "Würzburg",
+        "Regensburg",
+        "其他"
+      ]
     };
   },
 
@@ -184,7 +191,6 @@ export default {
           isDefault,
           name,
           postalCode,
-          strNr,
           street,
           tel
         } = data.data;
@@ -195,7 +201,6 @@ export default {
           isDefault,
           name,
           postalCode,
-          strNr,
           street,
           tel
         };
@@ -212,13 +217,23 @@ export default {
     },
     onSelect(action) {
       this.showCity = false;
-      this.info.city = action.name;
+      if (action.name === "其他") {
+        this.showOtherCity = true;
+        this.info.city = "";
+      } else {
+        this.info.city = action.name;
+      }
     },
     async onSave() {
+      const addressExtra = this.info.addressExtra;
       if (this.delivery === "1") {
-        this.info.addressExtra = "【配送】" + this.info.addressExtra;
+        this.info.addressExtra = addressExtra.startsWith("【")
+          ? addressExtra.replace(/【.*】/, "【配送】")
+          : (this.info.addressExtra = "【配送】" + addressExtra);
       } else {
-        this.info.addressExtra = "【邮寄】" + this.info.addressExtra;
+        this.info.addressExtra = addressExtra.startsWith("【")
+          ? addressExtra.replace(/【.*】/, "【邮寄】")
+          : (this.info.addressExtra = "【邮寄】" + addressExtra);
       }
       const params = { ...this.info };
       // delete params.id;
