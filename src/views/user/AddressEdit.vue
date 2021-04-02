@@ -151,6 +151,7 @@ export default {
         city: "",
         postalCode: "",
         street: "",
+        strNr: "",
         addressExtra: "",
         isDefault: false
       },
@@ -192,6 +193,7 @@ export default {
           name,
           postalCode,
           street,
+          strNr,
           tel
         } = data.data;
         this.info = {
@@ -202,6 +204,7 @@ export default {
           name,
           postalCode,
           street,
+          strNr,
           tel
         };
         if (
