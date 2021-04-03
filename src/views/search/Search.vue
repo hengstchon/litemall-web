@@ -61,7 +61,6 @@
 
 <script>
 import { Search, Tab, Tabs, Card, List, Tag } from "vant";
-import { goodsList } from "@/api/goods";
 import { searchIndex, searchClearHistory } from "@/api/user";
 import SearchContent from "./SearchContent.vue";
 

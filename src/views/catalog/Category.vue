@@ -65,7 +65,7 @@ export default {
     },
 
     async setCategoryGoodsList(id) {
-      const { data } = await goodsList({ categoryId: id });
+      const { data } = await goodsList({ categoryId: id, limit: 0 });
       this.currentCategoryGoodsList = data.data.list;
     },
 
