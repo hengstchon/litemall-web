@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import { ContactCard, Field, SubmitBar, Card, Tag } from "vant";
+import { ContactCard, Field, SubmitBar, Card, Tag, Dialog } from "vant";
 import { cartCheckout } from "@/api/cart";
 import { orderSubmit } from "@/api/order";
 import { getLocalStorage } from "../../utils/utils";
@@ -155,12 +155,40 @@ export default {
       this.orderTotalPrice = data.data.orderTotalPrice;
       this.couponId = data.data.couponId;
     },
-    async confirmSubmit() {
+    getAddressContent() {
+      console.log("this.checkedAddress: ", this.checkedAddress);
+      const {
+        addressExtra,
+        city,
+        name,
+        postalCode,
+        street,
+        tel,
+        strNr
+      } = this.checkedAddress;
+      const content = `姓名: ${name}\n手机号码: ${tel}\n地址: ${street} ${strNr}, ${postalCode}, ${city}\n补充: ${addressExtra}`;
+      return content;
+    },
+    confirmSubmit() {
       if (this.addressId === 0) {
-        this.$toast.fail("请设置收货地址");
+        this.$toast.fail("请选择收货地址");
         return;
       }
 
+      Dialog.confirm({
+        title: "确认地址",
+        message: this.getAddressContent(),
+        cancelButtonText: "返回修改"
+      })
+        .then(() => {
+          // on confirm
+          this.clickConfirm()
+        })
+        .catch(() => {
+          // on cancel
+        });
+    },
+    async clickConfirm() {
       try {
         const { data } = await orderSubmit({
           cartId: this.cartId,
@@ -173,6 +201,7 @@ export default {
       } catch (e) {
         this.$router.push("/checkout-result?result=fail");
       }
+
     }
   }
 };
