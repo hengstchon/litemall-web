@@ -8,15 +8,6 @@
 
     <div class="p-3">
       <div>
-        <van-field name="delivery" label="送货方式" required>
-          <template #input>
-            <van-radio-group v-model="delivery" direction="horizontal">
-              <van-radio name="1">配送</van-radio>
-              <van-radio name="2">邮寄</van-radio>
-            </van-radio-group>
-          </template>
-        </van-field>
-
         <van-field
           v-model="info.name"
           label="姓名"
@@ -35,31 +26,11 @@
         />
 
         <van-field
-          v-if="delivery === '1' && showOtherCity === false"
-          v-model="info.city"
-          clearable
-          required
-          is-link
-          readonly
-          label="城市"
-          placeholder="选择城市"
-          @click="() => (showCity = !showCity)"
-        />
-        <van-field
-          v-if="delivery === '2'"
           v-model="info.city"
           clearable
           required
           label="城市"
           placeholder="如: Erlangen"
-        />
-        <van-field
-          v-if="showOtherCity"
-          v-model="info.city"
-          clearable
-          required
-          label="其他城市"
-          placeholder="填写城市名"
         />
 
         <van-field
@@ -114,13 +85,6 @@
         >
       </div>
     </div>
-
-    <van-action-sheet
-      v-model="showCity"
-      title="城市选择"
-      :actions="actions"
-      @select="onSelect"
-    />
   </div>
 </template>
 
@@ -207,37 +171,10 @@ export default {
           strNr,
           tel
         };
-        if (
-          this.cityList.includes(
-            this.info.city.replace(/^(.)|\s+(.)/g, c => c.toUpperCase())
-          )
-        ) {
-          this.delivery = "1";
-        } else {
-          this.delivery = "2";
-        }
-      }
-    },
-    onSelect(action) {
-      this.showCity = false;
-      if (action.name === "其他") {
-        this.showOtherCity = true;
-        this.info.city = "";
-      } else {
-        this.info.city = action.name;
       }
     },
     async onSave() {
       const addressExtra = this.info.addressExtra;
-      if (this.delivery === "1") {
-        this.info.addressExtra = addressExtra.startsWith("【")
-          ? addressExtra.replace(/【.*】/, "【配送】")
-          : (this.info.addressExtra = "【配送】" + addressExtra);
-      } else {
-        this.info.addressExtra = addressExtra.startsWith("【")
-          ? addressExtra.replace(/【.*】/, "【邮寄】")
-          : (this.info.addressExtra = "【邮寄】" + addressExtra);
-      }
       const params = { ...this.info };
       // delete params.id;
       try {
